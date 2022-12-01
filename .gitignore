@@ -1,0 +1,8 @@
+# SSH Keys
+*.pem
+*.ppk
+
+# Package Files
+*.jar
+*.war
+*.ear
