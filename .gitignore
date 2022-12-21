@@ -2,6 +2,10 @@
 *.pem
 *.ppk
 
+*.cmd
+/mvnw
+.mvn
+
 # Package Files
 *.jar
 *.war
