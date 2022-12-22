@@ -3,6 +3,8 @@ package br.com.erudio.data.model;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +20,7 @@ public class Person implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonProperty("key")
 	private Long id;
 	@Column(name="first_name", nullable = false, length = 80)
 	private String firstName;

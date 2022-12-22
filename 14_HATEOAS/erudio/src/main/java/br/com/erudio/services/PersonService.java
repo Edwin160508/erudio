@@ -1,6 +1,7 @@
 package br.com.erudio.services;
 
-import jakarta.validation.Valid;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +12,13 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.erudio.controllers.PersonController;
 import br.com.erudio.data.model.Person;
 import br.com.erudio.data.vo.v1.PersonVO;
 import br.com.erudio.exceptions.ResourceNotFoundException;
+import br.com.erudio.mapper.custom.PersonMapper;
 import br.com.erudio.repositories.PersonRepository;
+import jakarta.validation.Valid;
 
 @Service
 public class PersonService {
@@ -27,6 +31,9 @@ public class PersonService {
 	@Autowired
 	private ObjectMapper mapper;
 	
+	@Autowired
+	private PersonMapper customMapper;
+	
 	public List<PersonVO> findAll() {
 		
 		logger.info("Fiding all peaple!");	
@@ -35,7 +42,7 @@ public class PersonService {
 		List<PersonVO> allPersonsVO = new ArrayList<>();
 		
 		for(Person entity : allPersonsEntity) {
-			PersonVO vo = mapper.convertValue(entity, PersonVO.class);
+			PersonVO vo = applyHateoas(entity.getId(), entity);
 			allPersonsVO.add(vo);
 		}
 		
@@ -48,16 +55,24 @@ public class PersonService {
 		
 		Person personFound = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
 		
-		return mapper.convertValue(personFound, PersonVO.class);
+		PersonVO vo = applyHateoas(id, personFound);
+		
+		return vo;
+	}
+
+	private PersonVO applyHateoas(Long id, Person personFound) {
+		PersonVO vo = mapper.convertValue(personFound, PersonVO.class);
+		vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+		return vo;
 	}
 	
 	public PersonVO create(@Valid PersonVO personVO) {	
 		
 		logger.info("Creating one person!");
 		try {
-			Person entity = mapper.convertValue(personVO, Person.class);
+			Person entity = customMapper.convertToEntity(personVO);
 			Person savedEntity = repository.save(entity);
-			return mapper.convertValue(savedEntity, PersonVO.class);
+			return applyHateoas(savedEntity.getId(), savedEntity);
 		}catch (Exception ex) {
     		ex.getStackTrace();
     		throw new RuntimeException("Error saving Person!");
@@ -68,13 +83,14 @@ public class PersonService {
 		
 		logger.info("Updating one person!");
 		
-		Person entity = repository.findById(personVO.getId()).orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
+		Person entity = repository.findById(personVO.getKey()).orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
 		entity.setFirstName(personVO.getFirstName());
 		entity.setLastName(personVO.getLastName());
 		entity.setAddress(personVO.getAddress());
 		entity.setGender(personVO.getGender());
 		try {
-			return mapper.convertValue(repository.save(entity), PersonVO.class);
+			var entitySaved = repository.save(entity);
+			return applyHateoas(entitySaved.getId(), entitySaved);
 		}catch (Exception ex) {
     		ex.getStackTrace();
     		throw new RuntimeException("Error to update Person!");

@@ -42,7 +42,7 @@ public class MockPerson {
 		vo.setLastName("LastName Test " + number);
 		vo.setAddress("Addres Test "+number);
 		vo.setGender((number % 2)==0 ? "Male":"Female");
-		vo.setId(number.longValue());
+		vo.setKey(number.longValue());
 		return vo;
 	}
 	
