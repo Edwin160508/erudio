@@ -22,6 +22,25 @@ public class MockPerson {
 		return mockEntity(0);
 	}
 	
+	public Person mockEntityBeforeSaved(Integer number) {
+		Person entity = new Person();
+		entity.setFirstName("FirstName Test "+number);
+		entity.setLastName("LastName Test "+number);
+		entity.setAddress("Addres Test "+number);
+		entity.setGender((number % 2)==0 ? "Male":"Female");
+		
+		return entity;
+	}
+	
+	public PersonVO mockVOBeforeSaved(Integer number) {
+		PersonVO vo = new PersonVO();
+		vo.setFirstName("FirstName Test "+number);
+		vo.setLastName("LastName Test " + number);
+		vo.setAddress("Addres Test "+number);
+		vo.setGender((number % 2)==0 ? "Male":"Female");		
+		return vo;
+	}
+	
 	public Person mockEntity(Integer number) {
 		Person entity = new Person();
 		entity.setFirstName("FirstName Test "+number);
@@ -30,6 +49,26 @@ public class MockPerson {
 		entity.setGender((number % 2)==0 ? "Male":"Female");
 		entity.setId(number.longValue());
 		return entity;
+	}
+	
+	public Person mockEntityToUpdate(Integer number) {
+		Person entity = new Person();
+		entity.setFirstName("FirstName Update Test "+number);
+		entity.setLastName("LastName Update Test " + number);
+		entity.setAddress("Addres Update Test "+number);
+		entity.setGender((number % 2)==0 ? "Male":"Female");
+		entity.setId(number.longValue());
+		return entity;
+	}
+	
+	public PersonVO mockVOToUpdate(Integer number) {
+		PersonVO vo = new PersonVO();
+		vo.setFirstName("FirstName Update Test "+number);
+		vo.setLastName("LastName Update Test " + number);
+		vo.setAddress("Addres Update Test "+number);
+		vo.setGender((number % 2)==0 ? "Male":"Female");
+		vo.setKey(number.longValue());
+		return vo;
 	}
 	
 	public PersonVO mockVO() {
